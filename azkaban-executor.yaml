@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: azkaban-executor
-        image: mykidong/azkaban-exec-server:3.90.0
+        image: yourrepo/azkaban-exec-server:3.90.0
         volumeMounts:
         - name: azkaban-cfg-vol
           mountPath: /opt/azkaban-executor/conf/azkaban.properties

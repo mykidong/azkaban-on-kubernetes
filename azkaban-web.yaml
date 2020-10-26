@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: azkaban-web
-        image: mykidong/azkaban-web-server:3.90.0        
+        image: yourrepo/azkaban-web-server:3.90.0
         ports:
         - containerPort: 8081
         volumeMounts:
