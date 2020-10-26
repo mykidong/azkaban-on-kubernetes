@@ -35,6 +35,7 @@ The azkaban packages used in the section are already uploaded onto the google dr
 
 
 ## Create Azkaban Images
+Azkaban packages are downloaded from google drive, and azkaban docker images will be built based on these azkaban packages.
 There are three docker images built by the following steps, namely, azkaban db, azkaban executor server and azkaban web server.
 ```
 # remove azkaban docker images.
