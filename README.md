@@ -64,9 +64,18 @@ docker build . -t yourrepo/azkaban-web-server:3.90.0;
 docker push yourrepo/azkaban-web-server:3.90.0;
 ```
 
-Please, note that you should replace `yourrepo` with your docker repo name in the above, and you also have to change the `yourrepo` in the manifest yaml files.
+Please, note that you should replace `yourrepo` with your docker repo name in the above.
 
 ## Run Azkaban on kubernetes
+Storage class of PVC for mysql looks like this, let's see `mysql.yaml`:
+```
+storageClassName: direct.csi.min.io
+```
+You can change it to suit to your environment.
+
+Note that you have to change the `yourrepo` in the docker image repo name in the manifest yaml files.
+
+
 Now, run azkaban executors and web server on kubernetes.
 ```
 ## ---- init.
