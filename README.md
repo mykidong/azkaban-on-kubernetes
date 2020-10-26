@@ -109,6 +109,7 @@ azkaban-executor-2             1/1     Running      0          3h18m
 azkaban-web-664967cb99-xhmrf   1/1     Running      0          3h9m
 mysql-statefulset-0            1/1     Running      0          4h3m
 ```
+As seen here, a mysql server, three executor servers, one web server are running on kubernetes.
 
 ## Access UI
 To access UI, let's see the services in azkaban namespaces.
