@@ -8,7 +8,7 @@ This step is optional, you can skip this section and move to the next section.
 ```
 cd ~;
 
-https://github.com/azkaban/azkaban.git
+git clone https://github.com/azkaban/azkaban.git
 cd azkaban;
 
 git checkout tags/3.90.0;
