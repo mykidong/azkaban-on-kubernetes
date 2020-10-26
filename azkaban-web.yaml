@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azkaban-web
+  namespace: azkaban
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8081
+  selector:
+    app: azkaban-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azkaban-web
+  namespace: azkaban
+spec:
+  selector:
+    matchLabels:
+      app: azkaban-web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: azkaban-web
+    spec:
+      containers:
+      - name: azkaban-web
+        image: mykidong/azkaban-web-server:3.90.0        
+        ports:
+        - containerPort: 8081
+        volumeMounts:
+        - name: azkaban-cfg-vol
+          mountPath: /opt/azkaban-web/conf/azkaban.properties
+          subPath: azkaban-web.properties
+        command: ["/opt/azkaban-web/bin/start-web.sh"]
+        resources:
+          requests:
+            memory: "4G"
+            cpu: 1
+        imagePullPolicy: Always
+      volumes:
+        - name: azkaban-cfg-vol
+          configMap:
+            name: azkaban-cfg

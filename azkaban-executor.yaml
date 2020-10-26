@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azkaban-executor
+  namespace: azkaban
+spec:
+  clusterIP: None
+  selector:
+    app: azkaban-executor
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: azkaban-executor
+  namespace: azkaban
+spec:
+  serviceName: azkaban-executor
+  replicas: 3
+  selector:
+    matchLabels:
+      app: azkaban-executor
+  template:
+    metadata:
+      labels:
+        app: azkaban-executor
+    spec:
+      containers:
+      - name: azkaban-executor
+        image: mykidong/azkaban-exec-server:3.90.0
+        volumeMounts:
+        - name: azkaban-cfg-vol
+          mountPath: /opt/azkaban-executor/conf/azkaban.properties
+          subPath: azkaban-executor.properties
+        command: ["/opt/azkaban-executor/bin/start-and-activate-exec.sh"]
+        resources:
+          requests:
+            memory: "4G"
+            cpu: 1
+        imagePullPolicy: Always
+      volumes:
+        - name: azkaban-cfg-vol
+          configMap:
+            name: azkaban-cfg

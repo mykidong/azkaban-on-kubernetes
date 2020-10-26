@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: azakban-initschema
+  namespace: azkaban
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: azkaban-create-db
+        image: mykidong/azkaban-db:3.90.0
+        command: [ "mysql" ]
+        args: [ "-h" ,"mysql-service.azkaban" , "-u", "root" , "--password=icarus0337",
+                "-e" , "CREATE DATABASE IF NOT EXISTS azkaban" ]
+        imagePullPolicy: Always
+      - name: azkaban-create-tables
+        image: mykidong/azkaban-db:3.90.0
+        command: [ "mysql" ]
+        args: [ "-h" ,"mysql-service.azkaban" , "-u", "root" , "--password=icarus0337",
+                "azkaban" , "-e", "source /opt/azkaban-db/create-all-sql-3.90.0.sql" ]
+        imagePullPolicy: Always
+      containers:
+      - name: job-done
+        image: busybox
+        command: [ 'sh', '-c', 'echo "azkaban db / tables creation completed"' ]
+      restartPolicy: Never
+  backoffLimit: 6
