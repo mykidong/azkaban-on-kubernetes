@@ -2,8 +2,9 @@
 Azkaban is a popular workflow engine which is used to run jobs especially in data lake(from my experience).
 This will show you how to run Azkaban(https://azkaban.readthedocs.io/en/latest/) on kubernetes.
 
-## Build Azkaban with source
-First, build azkaban with source codes and package it as tar files.
+## Build Azkaban with source(Optional)
+You can build azkaban with source codes and package it as tar files.
+This step is optional, you can skip this section and move to the next section.
 ```
 cd ~;
 
