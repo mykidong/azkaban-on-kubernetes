@@ -178,9 +178,6 @@ vi ~/.ssh/authorized_keys;
 
 # chmod 600.
 chmod 600 ~/.ssh/authorized_keys;
-
-# copy the public keys of the other executors and paste them to the remote machine.
-...
 ```
 and then, login to remote machine via ssh in the individual azkaban executor:
 ```
