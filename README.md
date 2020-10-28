@@ -151,4 +151,143 @@ azkaban upload -c -p basicFlow20Project -u azkaban@http://52.231.165.73:8081 ./b
 azkaban upload -c -p embeddedFlow20Project -u azkaban@http://52.231.165.73:8081 ./embeddedFlow20Project.zip;
 ```
 
+## A little bit real example: Run shell in remote machine from azkaban executor
+It is another example in which azkaban executor will call the remote shell to run spark job. Let's say, because spark and kubectl are installed on the remote machine, it is ready to submit spark job to kubernetes there.
+To do so, ssh access to the remote machine from azkaban executor must be enabled. 
+```
+# list pods.
+kubectl get po -n azkaban
+NAME                           READY   STATUS       RESTARTS   AGE
+azakban-initschema-9bgbh       0/1     Completed    0          16h
+azakban-initschema-dtgg7       0/1     Init:Error   0          16h
+azakban-initschema-fw7gt       0/1     Init:Error   0          16h
+azkaban-executor-0             1/1     Running      0          16h
+azkaban-executor-1             1/1     Running      0          16h
+azkaban-executor-2             1/1     Running      0          16h
+azkaban-web-664967cb99-z8dzn   1/1     Running      0          16h
+mysql-statefulset-0            1/1     Running      0          16h
 
+# access executor pod to get public key.
+kubectl exec -it azkaban-executor-0 -n azkaban -- cat .ssh/id_rsa.pub;
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC0vuKKMz4dD0aBrJKtlVU8fDmYgqkwpkDXTzoUTqm57CqEmzHa5EDS90xGch1rAN4HucOR6dzUGvb2VlATBGIi5VZ6w0OuRR+r50KHqiC0TLdEXzX1/TRO/uHftI/xdUMFDHOWTuZnsYS5V7DCrw1yJnPzHTHktgXDyycM/iEspdfslzgZuIV4zT3HNVAYIplQPyy8TKRy7gojm7OYw5W2S14hqiY5/HL/CZ9CQpKV37qJvd3E4u/pOZCHH7r1Tm5E3bnUX9U8z7Nj0Fb+TZSkxiEbwoKB/Ib07Urc0il2f4mug2bKazZRsU+/bb1+VjoMW0ek+9Rvk1JTkaXIu8k/ executor@33842653d6db
+
+# copy this executor public key and paste it to authorized_keys file in remote machine.
+## in remote machine.
+vi ~/.ssh/authorized_keys;
+... paste public key.
+
+# chmod 600.
+chmod 600 ~/.ssh/authorized_keys;
+
+# copy the public keys of the other executors and paste them to the remote machine.
+...
+```
+and then, login to remote machine via ssh in the individual azkaban executor:
+```
+kubectl exec -it azkaban-executor-0 -n azkaban -- sh;
+ssh pcp@52.231.165.193;
+...
+exit;
+```
+
+Let's create shell to run spark job in the remote machine:
+```
+# spark job run shell.
+vi run-spark-example.sh;
+...
+
+############## spark job: create delta table
+
+# submit spark job onto kubernetes.
+export MASTER=k8s://https://xxxx:6443;
+export NAMESPACE=ai-developer;
+export ENDPOINT=http://$(kubectl get svc s3g-service -n ai-developer -o jsonpath={.status.loadBalancer.ingress[0].ip}):9898;
+export HIVE_METASTORE=metastore.ai-developer:9083;
+
+spark-submit \
+--master ${MASTER} \
+--deploy-mode cluster \
+--name spark-delta-example \
+--class io.spongebob.spark.examples.DeltaLakeExample \
+--packages com.amazonaws:aws-java-sdk-s3:1.11.375,org.apache.hadoop:hadoop-aws:3.2.0 \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.checkpointpvc.mount.path=/checkpoint \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.checkpointpvc.mount.subPath=checkpoint \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.checkpointpvc.mount.readOnly=false \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.checkpointpvc.options.claimName=spark-driver-pvc \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.checkpointpvc.mount.path=/checkpoint \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.checkpointpvc.mount.subPath=checkpoint \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.checkpointpvc.mount.readOnly=false \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.checkpointpvc.options.claimName=spark-exec-pvc \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.spark-local-dir-localdirpvc.mount.path=/localdir \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.spark-local-dir-localdirpvc.mount.readOnly=false \
+--conf spark.kubernetes.driver.volumes.persistentVolumeClaim.spark-local-dir-localdirpvc.options.claimName=spark-driver-localdir-pvc \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.spark-local-dir-localdirpvc.mount.path=/localdir \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.spark-local-dir-localdirpvc.mount.readOnly=false \
+--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.spark-local-dir-localdirpvc.options.claimName=spark-exec-localdir-pvc \
+--conf spark.kubernetes.file.upload.path=s3a://mykidong/spark-examples \
+--conf spark.kubernetes.container.image.pullPolicy=Always \
+--conf spark.kubernetes.namespace=$NAMESPACE \
+--conf spark.kubernetes.container.image=xxx/spark:v3.0.0 \
+--conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
+--conf spark.hadoop.hive.metastore.client.connect.retry.delay=5 \
+--conf spark.hadoop.hive.metastore.client.socket.timeout=1800 \
+--conf spark.hadoop.hive.metastore.uris=thrift://$HIVE_METASTORE \
+--conf spark.hadoop.hive.server2.enable.doAs=false \
+--conf spark.hadoop.hive.server2.thrift.http.port=10002 \
+--conf spark.hadoop.hive.server2.thrift.port=10016 \
+--conf spark.hadoop.hive.server2.transport.mode=binary \
+--conf spark.hadoop.metastore.catalog.default=spark \
+--conf spark.hadoop.hive.execution.engine=spark \
+--conf spark.hadoop.hive.input.format=io.delta.hive.HiveInputFormat \
+--conf spark.hadoop.hive.tez.input.format=io.delta.hive.HiveInputFormat \
+--conf spark.sql.warehouse.dir=s3a:/mykidong/apps/spark/warehouse \
+--conf spark.hadoop.fs.defaultFS=s3a://mykidong \
+--conf spark.hadoop.fs.s3a.access.key=any-access-key \
+--conf spark.hadoop.fs.s3a.secret.key=any-secret-key \
+--conf spark.hadoop.fs.s3a.connection.ssl.enabled=true \
+--conf spark.hadoop.fs.s3a.endpoint=$ENDPOINT \
+--conf spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem \
+--conf spark.hadoop.fs.s3a.fast.upload=true \
+--conf spark.hadoop.fs.s3a.path.style.access=true \
+--conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" \
+--conf spark.executor.instances=3 \
+--conf spark.executor.memory=2G \
+--conf spark.executor.cores=1 \
+--conf spark.driver.memory=1G \
+file:///home/pcp/spongebob/examples/spark/target/spark-example-1.0.0-SNAPSHOT-spark-job.jar \
+--master ${MASTER};
+
+...
+
+
+
+# chmod set to be executable.
+chmod a+x run-spark-example.sh;
+```
+
+
+Now, create an azkaban flow like this:
+```
+---
+config:
+  failure.emails: mykidong@gmail.com
+
+nodes:
+- name: Start
+  type: noop
+
+
+- name: RunSparkJob
+  type: command
+  config:
+    command: ssh pcp@x.x.x.x "/home/pcp/run-spark-example.sh"
+  dependsOn:
+  - Start
+
+- name: End
+  type: noop
+  dependsOn:
+  - RunSparkJob
+  ```
+  
+  
