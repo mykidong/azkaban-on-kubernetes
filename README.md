@@ -185,7 +185,7 @@ chmod 600 ~/.ssh/authorized_keys;
 and then, login to remote machine via ssh in the individual azkaban executor:
 ```
 kubectl exec -it azkaban-executor-0 -n azkaban -- sh;
-ssh pcp@52.231.165.193;
+ssh pcp@x.x.x.x;
 ...
 exit;
 ```
