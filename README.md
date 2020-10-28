@@ -254,7 +254,7 @@ spark-submit \
 --conf spark.executor.memory=2G \
 --conf spark.executor.cores=1 \
 --conf spark.driver.memory=1G \
-file:///home/pcp/spongebob/examples/spark/target/spark-example-1.0.0-SNAPSHOT-spark-job.jar \
+file:///home/pcp/xxx/examples/spark/target/spark-example-1.0.0-SNAPSHOT-spark-job.jar \
 --master ${MASTER};
 
 ...
