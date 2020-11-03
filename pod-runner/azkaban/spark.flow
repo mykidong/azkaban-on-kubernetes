@@ -1,0 +1,20 @@
+---
+config:
+  failure.emails: mykidong@gmail.com
+
+nodes:
+- name: Start
+  type: noop
+
+
+- name: RunSparkJob
+  type: command
+  config:
+    command: /bin/sh -c 'cd /opt/azkaban-executor && java -cp ./pod-runner-1.0.0-SNAPSHOT-fat.jar io.mykidong.kubernetes.PodRunner --conf ./pod-runner.properties --image mykidong/spark-job-runner:v3.0.0 --cmd ./run.sh --args "--job.type=spark" --namespace azkaban --run.job.url mykidong/test/run-job.sh --encryptor.path ./enc'
+  dependsOn:
+  - Start
+
+- name: End
+  type: noop
+  dependsOn:
+  - RunSparkJob

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: azkaban-job-{{ suffix }}
+  namespace: {{ namespace }}
+spec:
+  restartPolicy: Never
+  containers:
+  - name: azkaban-job
+    image: {{ image }}
+    command: [{{ cmd }}]
+    args: [{{ args }}]
+    imagePullPolicy: Always

@@ -1,0 +1,214 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.mykidong</groupId>
+	<artifactId>pod-runner</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>Pod Runner</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- testing -->
+		<junit.version>4.12</junit.version>
+
+		<!-- spring -->
+		<spring.version>5.2.4.RELEASE</spring.version>
+
+		<!-- fabric8 kubernetes client -->
+		<fabric8.k8s.client.version>4.10.3</fabric8.k8s.client.version>
+
+		<!-- commons io -->
+		<commons-io.version>2.7</commons-io.version>
+
+		<!-- jinjava -->
+		<jinjava.version>2.5.5</jinjava.version>
+
+		<!-- jackson -->
+		<jackson.version>2.11.2</jackson.version>
+
+		<!-- commons io -->
+		<commons-io.version>2.6</commons-io.version>
+
+		<!-- json io -->
+		<json-io.version>4.9.0</json-io.version>
+
+		<!-- okhttp -->
+		<okhttp.version>3.10.0</okhttp.version>
+
+		<!-- snake yaml -->
+		<snake-yaml.version>1.26</snake-yaml.version>
+
+		<!-- joda time -->
+		<joda-time.version>2.10.6</joda-time.version>
+
+		<!-- jasypt -->
+		<jasypt.version>1.9.3</jasypt.version>
+
+		<!-- logging -->
+		<slf4j.version>1.6.6</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+
+		<!-- jopt simple -->
+		<jopt-simple.version>5.0.4</jopt-simple.version>
+
+		<!-- aws S3 -->
+		<amazonaws.sdk.s3.version>1.11.375</amazonaws.sdk.s3.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>kubernetes-client</artifactId>
+			<version>${fabric8.k8s.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>kubernetes-server-mock</artifactId>
+			<version>${fabric8.k8s.client.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hubspot.jinjava</groupId>
+			<artifactId>jinjava</artifactId>
+			<version>${jinjava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cedarsoftware</groupId>
+			<artifactId>json-io</artifactId>
+			<version>${json-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>${okhttp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>${snake-yaml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>${jasypt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jopt-simple</groupId>
+			<artifactId>jopt-simple</artifactId>
+			<version>${jopt-simple.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>${amazonaws.sdk.s3.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.14.1</version>
+					<configuration>
+						<testFailureIgnore>true</testFailureIgnore>
+						<junitArtifactName>junit:junit</junitArtifactName>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<shadedArtifactAttached>true</shadedArtifactAttached>
+					<shadedClassifierName>fat</shadedClassifierName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>utf-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/test/resources</directory>
+				<targetPath>${project.basedir}/target/test-classes</targetPath>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+	</build>
+	<profiles>
+	</profiles>
+</project>
