@@ -289,3 +289,8 @@ nodes:
   
   
   After zipping and deploying your new project with this flow to azkaban web, you can execute the job in the azkaban ui.
+  
+  
+  ## Embeded Pod Runner in Azaban Executor to create a job pod
+  There is another scenario to run jobs. You can write a Pod Runner embeded in azkaban executor to run a job pod.
+  See this for more details: https://mykidong.medium.com/azkaban-on-kubernetes-149fde21aa50
